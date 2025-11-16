@@ -2,22 +2,33 @@
 node_modules/
 npm-debug.log
 yarn-error.log
+package-lock.json
 
 # TypeScript
 dist/
 *.tsbuildinfo
 
-# Ambiente
+# Ambiente (NUNCA commitar!)
 .env
 .env.local
 .env.production
+.env.*.local
 
 # Sistema Operacional
 .DS_Store
 Thumbs.db
+*.swp
+*.swo
 
 # IDEs
 .vscode/
 .idea/
 *.swp
-*.swo
+
+# Prisma
+*.db
+*.db-journal
+
+# Logs
+logs/
+*.log

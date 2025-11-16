@@ -1,23 +1,24 @@
-// Arquivo: backend/src/server.ts
+import dotenv from "dotenv";
+dotenv.config();
 
-import Fastify, {
+import fastify, {
   FastifyInstance,
   FastifyRequest,
   FastifyReply,
 } from "fastify";
 import cors from "@fastify/cors";
 import formbody from "@fastify/formbody";
-import dotenv from "dotenv";
+import { authRoutes } from "./routes/auth.routes"; // Importar Rotas
+import { request } from "http";
+import { timeStamp } from "console";
+import { Stats } from "fs";
+import { success } from "zod";
 
-// Carregar variáveis de ambiente
-dotenv.config();
-
-// Criar instância do Fastify
-const app: FastifyInstance = Fastify({
+const app: FastifyInstance = fastify({
   logger: {
     level: "info",
     transport: {
-      target: "pino-pretty", // Logs coloridos
+      target: "pino-pretty",
       options: {
         translateTime: "HH:MM:ss",
         ignore: "pid,hostname",
@@ -26,71 +27,156 @@ const app: FastifyInstance = Fastify({
   },
 });
 
-// Porta do servidor
-const PORT = Number(process.env.PORT) || 5000;
+const PORT = Number(process.env.PORT) || 5000; // Porta do servidor
+
+//Function de inicialização
 
 async function startServer() {
   try {
-    // CORS: Permite frontend acessar a API
+    // CORS
     await app.register(cors, {
       origin: "http://localhost:3000",
       credentials: true,
     });
 
-    // Form Body: Parse de dados de formulários
     await app.register(formbody);
 
-    // Rota raiz (teste)
+    //Rota raiz
     app.get("/", async (request: FastifyRequest, reply: FastifyReply) => {
       return {
-        message: "WS Barber API com Fastify!",
+        message: "WS Barber API com Fastify",
         version: "1.0.0",
-        timestamp: new Date().toISOString(),
+        timeStamp: new Date().toISOString(),
+        endpoints: {
+          auth: "/auth",
+          docs: "/docs",
+        },
       };
     });
 
-    // Health check
+    //Health check
     app.get("/health", async (request: FastifyRequest, reply: FastifyReply) => {
       return {
         status: "OK",
         uptime: process.uptime(),
-        environment: process.env.NODE_ENV,
-        database: "PostgreSQL Local",
+        anvitonment: process.env.NODE_ENV,
+        db: "PostgreSQL Local",
       };
     });
 
-    // 404 - Rota não encontrada
-    app.setNotFoundHandler((request, reply) => {
-      reply.status(404).send({
-        error: "Rota não encontrada",
-        path: request.url,
-      });
+    //Rota de Teste do banco
+    app.get(
+      "/test-db",
+      async (request: FastifyRequest, reply: FastifyReply) => {
+        try {
+          const { default: prisma } = await import("./config/prisma");
+
+          await prisma.$connect();
+
+          const stats = {
+            user: {
+              total: await prisma.user.count(),
+              byRole: await prisma.user.groupBy({
+                by: ["role"],
+                _count: true,
+              }),
+              active: await prisma.user.count({
+                where: {
+                  active: true,
+                },
+              }),
+            },
+            services: {
+              total: await prisma.service.count(),
+              active: await prisma.service.count({
+                where: {
+                  active: true,
+                },
+              }),
+              totalValue: await prisma.service.aggregate({
+                _sum: { price: true },
+                _avg: { price: true },
+              }),
+            },
+            bookings: {
+              total: await prisma.booking.count(),
+              byStatus: await prisma.booking.groupBy({
+                by: ["status"],
+                _count: true,
+              }),
+            },
+            transactions: {
+              total: await prisma.transaction.count(),
+              totalRevenue: await prisma.transaction.aggregate({
+                _sum: { amount: true },
+              }),
+            },
+            reviews: {
+              total: await prisma.review.count(),
+              averageRating: await prisma.review.aggregate({
+                _avg: { rating: true },
+              }),
+            },
+            barberSchedules: {
+              total: await prisma.barberSchedule.count(),
+            },
+          };
+
+          return {
+            status: "success",
+            message: "PostgreSQL Local conectado!",
+            database: "ws_barber",
+            timestamp: new Date().toISOString(),
+            Stats,
+          };
+        } catch (error) {
+          app.log.error(error);
+
+          return reply.status(500).send({
+            status: "error",
+            message: "Erro ao conectar no banco",
+            error: error instanceof Error ? error.message : "Erro desconhecido",
+          });
+        }
+      }
+    );
+
+    await app.register(authRoutes, {
+      prefix: "/auth",
     });
 
-    // Erro global
+    //Erro global
     app.setErrorHandler((error, request, reply) => {
       app.log.error(error);
 
       reply.status(error.statusCode || 500).send({
-        error: "Erro interno do servidor",
-        message: error.message,
+        success: false,
+        message: error.message || "Erro interno do servidor",
       });
     });
 
-    await app.listen({ port: PORT, host: "0.0.0.0" });
+    await app.listen({
+      port: PORT,
+      host: "0.0.0.0",
+    });
 
     console.log("");
     console.log("========================================");
-    console.log("Servidor rodando!");
-    console.log(`URL: http://localhost:${PORT}`);
-    console.log(`Ambiente: ${process.env.NODE_ENV}`);
-    console.log(
-      `Banco: PostgreSQL Local (${
-        process.env.DATABASE_URL?.split("@")[1]?.split("/")[0]
-      })`
-    );
+    console.log("Servidor Fastify rodando!");
+    console.log(`RL: http://localhost:${PORT}`);
+    console.log(`mbiente: ${process.env.NODE_ENV}`);
+    console.log(`Banco: PostgreSQL Local`);
+    console.log(`Autenticação: JWT`);
     console.log(`Iniciado: ${new Date().toLocaleString("pt-BR")}`);
     console.log("========================================");
+    console.log("");
+    console.log("Rotas disponíveis:");
+    console.log("   GET  / (raiz)");
+    console.log("   GET  /health");
+    console.log("   GET  /test-db");
+    console.log("   POST /auth/register");
+    console.log("   POST /auth/login");
+    console.log("   GET  /auth/me (protegida)");
     console.log("");
   } catch (error) {
     app.log.error(error);
@@ -98,5 +184,4 @@ async function startServer() {
   }
 }
 
-// Iniciar o servidor
 startServer();
