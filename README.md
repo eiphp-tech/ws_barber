@@ -1,29 +1,62 @@
-node_modules/
-npm-debug.log
-yarn-error.log
+# 🚀 WS BARBER SYSTEM
 
-# Ambiente
+Plataforma completa de gestão e agendamentos para barbearias.
 
-.env
-.env.local
-.env.\*.local
+## 📋 Sobre o Projeto
 
-# Sistema
+Sistema web full-stack para gerenciamento da barbearia com 4 perfis de usuário:
 
-.DS_Store
-Thumbs.db
+- **👑 Dono**: Controle financeiro, gestão de equipe, relatórios
+- **📋 Recepcionista**: Agenda diária, cadastro de clientes, confirmações
+- **✂️ Barbeiro**: Visualização da agenda, comissões, desempenho
+- **👤 Cliente**: Agendamento online, histórico, avaliações
 
-# IDEs
+## 🛠️ Stack Tecnológica
 
-.vscode/
-.idea/
+### Backend
 
-# Build
+- Fastify
+- TypeScript
+- Prisma ORM
+- PostgreSQL
+- JWT + Bcrypt
 
-dist/
-build/
+### Frontend
 
-# Logs
+- Next.js 14+ (App Router)
+- TypeScript
+- TailwindCSS + shadcn/ui
+- Zustand
+- React Hook Form + Zod
 
-logs/
-\*.log
+## 📁 Estrutura
+
+```
+ws_barber/
+├── backend/     → API REST (Fastify)
+├── frontend/    → Interface (Next.js)
+└── docs/        → Documentação
+```
+
+## 🚀 Como Rodar
+
+### Backend
+
+```bash
+cd backend
+npm install
+npx prisma migrate dev
+npm run dev
+```
+
+### Frontend
+
+```bash
+cd frontend
+npm install
+npm run dev
+```
+
+## 📝 Licença
+
+ISC License - WS Barber © 2024
