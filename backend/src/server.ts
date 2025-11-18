@@ -8,7 +8,8 @@ import fastify, {
 } from "fastify";
 import cors from "@fastify/cors";
 import formbody from "@fastify/formbody";
-import { authRoutes } from "./routes/auth.routes"; // Importar Rotas
+import { authRoutes } from "./routes/auth.routes";
+import { serviceRoutes } from "./routes/service.routes";
 import { request } from "http";
 import { timeStamp } from "console";
 import { Stats } from "fs";
@@ -145,6 +146,8 @@ async function startServer() {
       prefix: "/auth",
     });
 
+    await app.register(serviceRoutes, { prefix: "/services" });
+
     //Erro global
     app.setErrorHandler((error, request, reply) => {
       app.log.error(error);
@@ -177,6 +180,12 @@ async function startServer() {
     console.log("   POST /auth/register");
     console.log("   POST /auth/login");
     console.log("   GET  /auth/me (protegida)");
+    console.log("   GET  /services (autenticada)");
+    console.log("   GET  /services/:id (autenticada)");
+    console.log("   POST /services (OWNER)");
+    console.log("   PUT  /services/:id (OWNER)");
+    console.log("   DELETE /services/:id (OWNER)");
+    console.log("   PATCH /services/:id/toggle (OWNER)");
     console.log("");
   } catch (error) {
     app.log.error(error);
