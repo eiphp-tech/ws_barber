@@ -29,38 +29,38 @@ export const serviceRoutes = async (app: FastifyInstance) => {
     getById
   );
 
-  // Criar serviço (apenas DONO)
+  // Criar serviço (apenas BARBEIRO)
   app.post(
     "/",
     {
-      preHandler: [authenticate, authorize(Role.DONO)],
+      preHandler: [authenticate, authorize(Role.BARBEIRO)],
     },
     create
   );
 
-  // Atualizar serviço (apenas DONO)
+  // Atualizar serviço (apenas BARBEIRO)
   app.put(
     "/:id",
     {
-      preHandler: [authenticate, authorize(Role.DONO)],
+      preHandler: [authenticate, authorize(Role.BARBEIRO)],
     },
     update
   );
 
-  // Deletar serviço (apenas DONO)
+  // Deletar serviço (apenas BARBEIRO)
   app.delete(
     "/:id",
     {
-      preHandler: [authenticate, authorize(Role.DONO)],
+      preHandler: [authenticate, authorize(Role.BARBEIRO)],
     },
     remove
   );
 
-  // Ativar/Desativar serviço (apenas DONO)
+  // Ativar/Desativar serviço (apenas BARBEIRO)
   app.patch(
     "/:id/toggle",
     {
-      preHandler: [authenticate, authorize(Role.DONO)],
+      preHandler: [authenticate, authorize(Role.BARBEIRO)],
     },
     toggle
   );

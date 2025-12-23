@@ -141,10 +141,8 @@ model BarberSchedule {
 }
 
 enum Role {
-  DONO
-  RECEPCIONISTA
-  BARBEIRO
-  CLIENTE
+  BARBEIRO // Barbeiro com controle total 360°
+  CLIENTE // Cliente que agenda serviços
 }
 
 enum BookingStatus {

@@ -4,8 +4,13 @@ import bcrypt from "bcrypt";
 const prisma = new PrismaClient();
 
 async function main() {
-  console.log("Iniciando seed do banco de dados...\n");
-  console.log("Limpando dados existentes...");
+  console.log("🌱 Iniciando seed do banco de dados...\n");
+
+  // ========================================
+  // LIMPAR DADOS EXISTENTES
+  // ========================================
+
+  console.log("🗑️  Limpando dados existentes...");
 
   await prisma.review.deleteMany();
   await prisma.transaction.deleteMany();
@@ -14,34 +19,20 @@ async function main() {
   await prisma.service.deleteMany();
   await prisma.user.deleteMany();
 
-  console.log("Dados Limpos\n");
+  console.log("✅ Dados limpos\n");
+
+  // ========================================
+  // HASH DE SENHA PADRÃO
+  // ========================================
 
   const passwordHash = await bcrypt.hash("123456", 10);
-  console.log("Hash de senha gerado\n");
+  console.log("🔐 Hash de senha gerado\n");
 
-  const dono = await prisma.user.create({
-    data: {
-      name: "Bruno Coceira",
-      email: "bruno@wsbarber.com",
-      password: passwordHash,
-      phone: "(34) 9999-9999",
-      role: Role.DONO,
-      avatar: "https://i.pravatar.cc/150?img=12",
-    },
-  });
-  console.log("Dono: Carlos Silva");
+  // ========================================
+  // CRIAR BARBEIROS (Controle total 360°)
+  // ========================================
 
-  const recepcionista = await prisma.user.create({
-    data: {
-      name: "Ana Santos",
-      email: "ana@wsbarber.com",
-      password: passwordHash,
-      phone: "(11) 98765-4322",
-      role: Role.RECEPCIONISTA,
-      avatar: "https://i.pravatar.cc/150?img=5",
-    },
-  });
-  console.log("   ✅ Recepcionista: Ana Santos");
+  console.log("💈 Criando barbeiros...");
 
   const barber1 = await prisma.user.create({
     data: {
@@ -65,7 +56,13 @@ async function main() {
       avatar: "https://i.pravatar.cc/150?img=68",
     },
   });
-  console.log("   ✅ Barbeiro: Marcos Silver");
+  console.log("   ✅ Barbeiro: Marcos Silver\n");
+
+  // ========================================
+  // CRIAR CLIENTES
+  // ========================================
+
+  console.log("👤 Criando clientes...");
 
   const client1 = await prisma.user.create({
     data: {
@@ -89,9 +86,25 @@ async function main() {
       avatar: "https://i.pravatar.cc/150?img=25",
     },
   });
-  console.log("   ✅ Cliente: Miguel Oliveira\n");
+  console.log("   ✅ Cliente: Miguel Oliveira");
 
-  console.log("Criando Serviços...");
+  const client3 = await prisma.user.create({
+    data: {
+      name: "Lucas Santos",
+      email: "lucas@email.com",
+      password: passwordHash,
+      phone: "(11) 98765-4327",
+      role: Role.CLIENTE,
+      avatar: "https://i.pravatar.cc/150?img=30",
+    },
+  });
+  console.log("   ✅ Cliente: Lucas Santos\n");
+
+  // ========================================
+  // CRIAR SERVIÇOS
+  // ========================================
+
+  console.log("✂️  Criando serviços...");
 
   const serviceCorte = await prisma.service.create({
     data: {
@@ -171,6 +184,10 @@ async function main() {
   });
   console.log("   ✅ Hidratação - R$ 30,00 (25min)\n");
 
+  // ========================================
+  // CRIAR HORÁRIOS DOS BARBEIROS
+  // ========================================
+
   console.log("📅 Criando horários dos barbeiros...");
 
   await prisma.barberSchedule.create({
@@ -213,20 +230,38 @@ async function main() {
     "   ✅ Marcos: Ter-Sex 10:00-19:00, Sáb 10:00-16:00, Dom 10:00-14:00\n"
   );
 
+  // ========================================
+  // RESUMO FINAL
+  // ========================================
+
   const totalUsers = await prisma.user.count();
+  const totalBarbers = await prisma.user.count({
+    where: { role: Role.BARBEIRO },
+  });
+  const totalClients = await prisma.user.count({
+    where: { role: Role.CLIENTE },
+  });
   const totalServices = await prisma.service.count();
   const totalSchedules = await prisma.barberSchedule.count();
 
   console.log("🎉 Seed concluído com sucesso!\n");
   console.log("📊 Dados criados:");
-  console.log(`   - ${totalUsers} usuários`);
+  console.log(
+    `   - ${totalUsers} usuários (${totalBarbers} barbeiros + ${totalClients} clientes)`
+  );
   console.log(`   - ${totalServices} serviços`);
   console.log(`   - ${totalSchedules} horários de barbeiros\n`);
 
   console.log("🔑 Credenciais para teste:");
-  console.log("   📧 Email: pedro@email.com");
-  console.log("   🔒 Senha: 123456\n");
+  console.log("   💈 BARBEIRO:");
+  console.log("      📧 Email: jhonathan@wsbarber.com");
+  console.log("      🔒 Senha: 123456");
+  console.log("");
+  console.log("   👤 CLIENTE:");
+  console.log("      📧 Email: pedro@email.com");
+  console.log("      🔒 Senha: 123456\n");
 }
+
 main()
   .catch((e) => {
     console.error("❌ Erro no seed:", e);

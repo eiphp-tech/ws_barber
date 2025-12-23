@@ -166,8 +166,8 @@ async function startServer() {
     console.log("");
     console.log("========================================");
     console.log("Servidor Fastify rodando!");
-    console.log(`RL: http://localhost:${PORT}`);
-    console.log(`mbiente: ${process.env.NODE_ENV}`);
+    console.log(`URL: http://localhost:${PORT}`);
+    console.log(`Ambiente: ${process.env.NODE_ENV}`);
     console.log(`Banco: PostgreSQL Local`);
     console.log(`Autenticação: JWT`);
     console.log(`Iniciado: ${new Date().toLocaleString("pt-BR")}`);
@@ -182,10 +182,10 @@ async function startServer() {
     console.log("   GET  /auth/me (protegida)");
     console.log("   GET  /services (autenticada)");
     console.log("   GET  /services/:id (autenticada)");
-    console.log("   POST /services (OWNER)");
-    console.log("   PUT  /services/:id (OWNER)");
-    console.log("   DELETE /services/:id (OWNER)");
-    console.log("   PATCH /services/:id/toggle (OWNER)");
+    console.log("   POST /services (BARBER)");
+    console.log("   PUT  /services/:id (BARBER)");
+    console.log("   DELETE /services/:id (BARBER)");
+    console.log("   PATCH /services/:id/toggle (BARBER)");
     console.log("");
   } catch (error) {
     app.log.error(error);
