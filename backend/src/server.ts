@@ -10,6 +10,7 @@ import cors from "@fastify/cors";
 import formbody from "@fastify/formbody";
 import { authRoutes } from "./routes/auth.routes";
 import { serviceRoutes } from "./routes/service.routes";
+import { barberRoutes } from "./routes/barber.routes"; // ← NOVO
 import { request } from "http";
 import { timeStamp } from "console";
 import { Stats } from "fs";
@@ -148,6 +149,8 @@ async function startServer() {
 
     await app.register(serviceRoutes, { prefix: "/services" });
 
+    await app.register(barberRoutes, { prefix: "/barbers" });
+
     //Erro global
     app.setErrorHandler((error, request, reply) => {
       app.log.error(error);
@@ -173,7 +176,7 @@ async function startServer() {
     console.log(`Iniciado: ${new Date().toLocaleString("pt-BR")}`);
     console.log("========================================");
     console.log("");
-    console.log("Rotas disponíveis:");
+    console.log("📚 Rotas disponíveis:");
     console.log("   GET  / (raiz)");
     console.log("   GET  /health");
     console.log("   GET  /test-db");
@@ -181,11 +184,16 @@ async function startServer() {
     console.log("   POST /auth/login");
     console.log("   GET  /auth/me (protegida)");
     console.log("   GET  /services (autenticada)");
-    console.log("   GET  /services/:id (autenticada)");
     console.log("   POST /services (BARBER)");
     console.log("   PUT  /services/:id (BARBER)");
     console.log("   DELETE /services/:id (BARBER)");
-    console.log("   PATCH /services/:id/toggle (BARBER)");
+    console.log("   GET  /barbers (autenticada)"); // ← NOVO
+    console.log("   GET  /barbers/:id (autenticada)"); // ← NOVO
+    console.log("   POST /barbers (BARBER)"); // ← NOVO
+    console.log("   PUT  /barbers/:id (BARBER)"); // ← NOVO
+    console.log("   DELETE /barbers/:id (BARBER)"); // ← NOVO
+    console.log("   POST /barbers/:id/schedule (BARBER)"); // ← NOVO
+    console.log("   GET  /barbers/:id/schedule (autenticada)"); // ← NOVO
     console.log("");
   } catch (error) {
     app.log.error(error);
