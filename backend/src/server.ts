@@ -11,6 +11,7 @@ import formbody from "@fastify/formbody";
 import { authRoutes } from "./routes/auth.routes";
 import { serviceRoutes } from "./routes/service.routes";
 import { barberRoutes } from "./routes/barber.routes"; // ← NOVO
+import { appointmentRoutes } from "./routes/appointment.routes";
 import { request } from "http";
 import { timeStamp } from "console";
 import { Stats } from "fs";
@@ -127,7 +128,7 @@ async function startServer() {
           return {
             status: "success",
             message: "PostgreSQL Local conectado!",
-            database: "ws_barber",
+            database: "Barbearia Primos Barber",
             timestamp: new Date().toISOString(),
             Stats,
           };
@@ -150,6 +151,8 @@ async function startServer() {
     await app.register(serviceRoutes, { prefix: "/services" });
 
     await app.register(barberRoutes, { prefix: "/barbers" });
+
+    await app.register(appointmentRoutes, { prefix: "/appointments" });
 
     //Erro global
     app.setErrorHandler((error, request, reply) => {
@@ -175,26 +178,6 @@ async function startServer() {
     console.log(`Autenticação: JWT`);
     console.log(`Iniciado: ${new Date().toLocaleString("pt-BR")}`);
     console.log("========================================");
-    console.log("");
-    console.log("📚 Rotas disponíveis:");
-    console.log("   GET  / (raiz)");
-    console.log("   GET  /health");
-    console.log("   GET  /test-db");
-    console.log("   POST /auth/register");
-    console.log("   POST /auth/login");
-    console.log("   GET  /auth/me (protegida)");
-    console.log("   GET  /services (autenticada)");
-    console.log("   POST /services (BARBER)");
-    console.log("   PUT  /services/:id (BARBER)");
-    console.log("   DELETE /services/:id (BARBER)");
-    console.log("   GET  /barbers (autenticada)"); // ← NOVO
-    console.log("   GET  /barbers/:id (autenticada)"); // ← NOVO
-    console.log("   POST /barbers (BARBER)"); // ← NOVO
-    console.log("   PUT  /barbers/:id (BARBER)"); // ← NOVO
-    console.log("   DELETE /barbers/:id (BARBER)"); // ← NOVO
-    console.log("   POST /barbers/:id/schedule (BARBER)"); // ← NOVO
-    console.log("   GET  /barbers/:id/schedule (autenticada)"); // ← NOVO
-    console.log("");
   } catch (error) {
     app.log.error(error);
     process.exit(1);
@@ -202,3 +185,4 @@ async function startServer() {
 }
 
 startServer();
+

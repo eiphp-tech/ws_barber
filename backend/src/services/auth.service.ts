@@ -122,3 +122,4 @@ export const getAuthenticatedUser = async (userId: string) => {
 
   return user;
 };
+

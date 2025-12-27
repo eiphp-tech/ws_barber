@@ -25,7 +25,7 @@ export const authenticate = async (
       });
     }
 
-    const parts = authHeader.split("");
+    const parts = authHeader.split(" ");
 
     if (parts.length !== 2 || parts[0] !== "Bearer") {
       return reply.status(401).send({
@@ -84,3 +84,4 @@ export const authorize = (...allowedRoles: Role[]) => {
     }
   };
 };
+

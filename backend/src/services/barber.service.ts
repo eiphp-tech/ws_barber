@@ -1,5 +1,3 @@
-// Arquivo: backend/src/services/barber.service.ts
-
 import prisma from "../config/prisma";
 import { Prisma, Role } from "@prisma/client";
 import { hashPassword } from "../utils/hash.util";
@@ -365,3 +363,4 @@ export const getBarberSchedule = async (barberId: string) => {
 
   return schedule;
 };
+
